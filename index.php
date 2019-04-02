@@ -8,7 +8,7 @@
 <?php endwhile; ?>
 <?php else : ?>
 
-	<p>404</p>
+	<p>404 - Not Found</p>
 
 <?php endif; ?>
 
