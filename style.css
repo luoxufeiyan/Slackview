@@ -170,7 +170,7 @@ input[type="submit"]:active, input[type="button"]:active, button:active, .commen
 	min-height: 300px;
 	color: #CCC;
 	color: rgba(255,255,255,0.5);
-	background-image: url('img/background.png');
+	background-image: url('https://pic.luoxufeiyan.com/banner/background.jpg');
 	background-size: cover;
 	background-position: 50% 75%;
 	box-shadow: 0 0 30px rgba(0, 0, 0, 0.76) inset;

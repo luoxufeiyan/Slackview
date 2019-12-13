@@ -82,6 +82,83 @@ function mv_browser_body_class($classes) {
 	}
 	return $classes;
 }
+
+/*======Copyright info======*/ 
+function feed_copyright($content) {
+    if(is_single() or is_feed()) { 
+    $content.= '<hr>';
+	$content.= '<div>原文转自：<a rel="bookmark" title="'.get_the_title().'" href="'.get_permalink().'">'.get_the_title().'</a>|<a href="https://www.luoxufeiyan.com">落絮飞雁的个人网站</a></div>';
+	$content.= '<div>授权协议：创作共用 <a href="http://creativecommons.org/licenses/by-nc/2.5/cn/">署名-非商业性使用 2.5 中国大陆</a></div>'; 
+	$content.= '<div>除注明外，本站文章均为原创；转载时请保留上述链接。</div>';
+
+    }
+    return $content;
+}
+add_filter ('the_content', 'feed_copyright');
+/*======Copyright info End======*/
+
+/* comment_mail_notify v1.0 */
+function comment_mail_notify($comment_id) {
+  $comment = get_comment($comment_id);
+  $parent_id = $comment->comment_parent ? $comment->comment_parent : '';
+  $spam_confirmed = $comment->comment_approved;
+  if (($parent_id != '') && ($spam_confirmed != 'spam')) {
+    $wp_email = 'no-reply@luoxufeiyan.com'; 
+    $to = trim(get_comment($parent_id)->comment_author_email);
+    $subject = '您在 [' . get_option("blogname") . '] 的留言有了回复';
+    $message = '
+    <div style="background-color:#eef2fa; border:1px solid #d8e3e8; color:#111; padding:0 15px; -moz-border-radius:5px; -webkit-border-radius:5px; -khtml-border-radius:5px;">
+      <p>' . trim(get_comment($parent_id)->comment_author) . ', 您好!</p>
+      <p><strong>您曾在《' . get_the_title($comment->comment_post_ID) . '》的留言:</strong><br />'
+       . trim(get_comment($parent_id)->comment_content) . '</p>
+      <p><strong>' . trim($comment->comment_author) . ' 给您的回复:</strong><br />'
+       . trim($comment->comment_content) . '<br /></p>
+      <p>您可以点击 <a href="' . htmlspecialchars(get_comment_link($parent_id)) . '" target="_blank">查看回复完整內容</a></p>
+      <p>欢迎再度光临 <a href="https://www.luoxufeiyan.com" target="_blank">' . get_option('blogname') . '</a></p>
+      <p>(此邮件由系统自动发送，请勿回复.)</p>
+    </div>';
+      $from = "From: \"" . get_option('blogname') . "\" <$wp_email>";
+      $headers = "$from\nContent-Type: text/html; charset=" . get_option('blog_charset') . "\n";
+      wp_mail( $to, $subject, $message, $headers );
+  }
+}
+add_action('comment_post', 'comment_mail_notify');
+/* comment_mail_notify v1.0 END */
+
+/*use-China-CDN-Gavatar*/
+function wizhi_get_avatar($avatar) 
+{
+    $avatar = str_replace(array("www.gravatar.com","0.gravatar.com","1.gravatar.com","2.gravatar.com"),"cn.gravatar.com",$avatar);
+    return $avatar;
+}
+add_filter( 'get_avatar', 'wizhi_get_avatar', 10, 3 );
+/*use-China-Gavatar-END*/
+
+/*小工具支持PHP代码*/
+add_filter('widget_text', 'do_shortcode');   
+add_filter('widget_text','execute_php',100);   
+function execute_php($html){   
+     if(strpos($html,"<"."?php")!==false){   
+          ob_start();   
+          eval("?".">".$html);   
+          $html=ob_get_contents();   
+          ob_end_clean();   
+     }   
+     return $html;   
+}   
+/*小工具支持PHP代码 end*/
+
+/* 清理垃圾评论 */
+function custom_spam_delete_interval() {
+    return 1;
+}
+add_filter( 'akismet_delete_comment_interval', 'custom_spam_delete_interval' );
+/* 清理垃圾评论 end*/
+
+/* 评论验证码 */
+
+/* 评论验证码 end */
+
 add_filter('body_class','mv_browser_body_class');
 
 ?>
